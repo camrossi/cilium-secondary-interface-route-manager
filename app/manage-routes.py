@@ -137,5 +137,10 @@ rm = RouteManager(env)
 while True:
     rm.sync_routes()
     rm.sync_rules()
+    '''
+    At the moment the loop is most likely useless because unless someone manually mess up the routes 
+    no changes are expected and if the DaemonSet config is changed the DS is restarted anyway however by having this
+    loop I am potentially ready to pull the route information from the APIC directly and make it a bit more self configuring
+    '''
     logger.info("Will check again in 60s")
     sleep(60)
