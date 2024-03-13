@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: set-svc-default-route-bgp
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: set-svc-default-route-bgp
+  template:
+    metadata:
+      labels:
+        name: set-svc-default-route-bgp
+    spec:
+      # Run only on the nodes labeled as bgp=ingress
+      nodeSelector:
+        bgp: ingress
+      # Needs to run as hostNetwork so that I can add the routes in the host routing table
+      hostNetwork: true
+      containers:
+        - image: quay.io/datacenter/cilium-secondary-interface-route-manager:v0.0.2
+          name: set-svc-default-route-bgp
+          securityContext:
+            # Needs to run as privileged so that I can add the routes in the host routing table
+            privileged: true
+          command: ['sh', '-c', "python3 manage-routes.py"]
+          env:
+            - name: RT_NUMBER
+              value: "101"
+            - name: SECONDARY_INTERFACE
+              value: "eth1"
+            - name: BGP_SVC_SUBNETS
+              value: "192.168.5.112/28,192.168.5.128/28"
+            - name: SECONDARY_GW
+              value: "192.168.5.107"
