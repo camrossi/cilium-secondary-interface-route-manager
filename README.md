@@ -16,14 +16,14 @@ This has an issue: If we have 2 interfaces now we need to ensure the traffic is 
 As a more elegant and simpler solution we can use Linux Routing Tables (if you are not familiar this is pretty much adding VRFs to linux) and do the following:
 
 - Add a new routing table say 100
-- Add a new default route in the route table 100 pointing to the Service Subnet GW
-- Use ip rule to tell linux that if the traffic is source from:
+- Add a new default route in the route table 100 pointing to the Service Subnet GW i.e. the L3OUT SVI Secondary IP
+- Use `ip rules` to tell linux that if the traffic is source from:
   - The Service Interface IP address or
   - The Service IP Pool
   
   We are going to use route table 100 and so the traffic will be sent back to the Service Subnet GW ensuring routing symmetry
 
-  This can be done manually but is cumbersome to manage especially if you can add/remove nodes dynamically. 
+  This can be done manually but is cumbersome to manage especially if you add/remove nodes dynamically. 
 
   This small application can be deployed as a DaemonSet (privileged container) and will manage the routing and ip rules for me.
 
